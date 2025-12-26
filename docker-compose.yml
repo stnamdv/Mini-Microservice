@@ -48,6 +48,7 @@ services:
       PORT: 3000
       AUTH_SERVICE_URL: http://auth-service:3001
       NODE_ENV: production
+      API_GATEWAY_URL: http://localhost:3000
     depends_on:
       - auth-service
     networks:

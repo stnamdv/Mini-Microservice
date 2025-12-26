@@ -2,6 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const swaggerUi = require('swagger-ui-express');
+
+// Import swagger docs trước khi load swagger config
+require('./routes/swagger-docs');
+const swaggerSpec = require('./config/swagger');
 
 const app = express();
 
@@ -9,6 +14,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Swagger UI - Enabled for all environments including production
+const swaggerOptions = {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Mini E-commerce API Documentation',
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true, // Giữ authorization khi refresh page
+    displayRequestDuration: true, // Hiển thị thời gian request
+    filter: true, // Enable filter/search
+    tryItOutEnabled: true, // Enable "Try it out" button
+  },
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
+
+// Swagger JSON endpoint (useful for external tools)
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Service URLs từ environment variables
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:3001';
@@ -33,7 +59,8 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      auth: '/api/auth/*'
+      auth: '/api/auth/*',
+      docs: '/api-docs'
     }
   });
 });

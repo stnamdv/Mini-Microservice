@@ -6,11 +6,13 @@ API Gateway cho hệ thống mini-ecommerce microservices. Gateway này đóng v
 
 - **Node.js** với **Express**
 - **http-proxy-middleware** để forward requests
+- **Swagger/OpenAPI** cho API documentation
 - **Docker** để triển khai
 
 ## Tính năng
 
 - ✅ Forward requests tới auth-service
+- ✅ **Swagger UI** - API Documentation dùng chung cho toàn bộ hệ thống
 - ✅ CORS handling
 - ✅ Request logging
 - ✅ Error handling
@@ -21,6 +23,10 @@ API Gateway cho hệ thống mini-ecommerce microservices. Gateway này đóng v
 
 ```
 api-gateway/
+├── config/
+│   └── swagger.js         # Swagger configuration
+├── routes/
+│   └── swagger-docs.js    # API documentation definitions
 ├── server.js              # Main server với proxy configuration
 ├── Dockerfile             # Docker image configuration
 ├── package.json           # Dependencies
@@ -33,6 +39,7 @@ api-gateway/
 
 - `GET /` - Thông tin về API Gateway
 - `GET /health` - Health check
+- `GET /api-docs` - **Swagger UI Documentation** (Truy cập tại http://localhost:3000/api-docs)
 
 ### Proxied Routes
 
@@ -115,6 +122,17 @@ curl -X POST http://localhost:3000/api/auth/login \
 curl http://localhost:3000/health
 ```
 
+### Swagger Documentation
+
+Truy cập Swagger UI tại: **http://localhost:3000/api-docs**
+
+Swagger UI cung cấp:
+- ✅ Tài liệu API đầy đủ cho tất cả endpoints
+- ✅ Test API trực tiếp từ browser
+- ✅ Schema definitions cho request/response
+- ✅ Authentication với Bearer Token
+- ✅ Examples cho tất cả endpoints
+
 ## Mở rộng
 
 Để thêm service mới vào Gateway, thêm proxy configuration trong `server.js`:
@@ -138,9 +156,60 @@ Client → API Gateway (Port 3000) → Auth Service (Port 3001)
                                   → ...
 ```
 
+## Swagger Documentation
+
+API Gateway tích hợp **Swagger UI** để cung cấp tài liệu API tập trung cho toàn bộ hệ thống. **Swagger được enable trên cả development và production.**
+
+### Truy cập Swagger UI
+
+- **Development**: http://localhost:3000/api-docs
+- **Production**: https://your-domain.com/api-docs (hoặc domain của bạn)
+
+### Tính năng Swagger
+
+- 📚 Tài liệu API đầy đủ với OpenAPI 3.0
+- 🧪 Test API trực tiếp từ browser
+- 🔐 Hỗ trợ Bearer Token authentication (persist khi refresh)
+- 📋 Schema definitions cho request/response
+- 💡 Examples cho tất cả endpoints
+- 🔍 Tìm kiếm và filter endpoints
+- ⏱️ Hiển thị thời gian request
+
+### Swagger Endpoints
+
+- `GET /api-docs` - Swagger UI interface
+- `GET /api-docs.json` - OpenAPI JSON specification (dùng cho external tools)
+
+### Cấu hình Production
+
+Để Swagger hoạt động đúng trên production, set environment variable `API_GATEWAY_URL`:
+
+```bash
+# Trong docker-compose.yml hoặc .env
+API_GATEWAY_URL=https://api.yourdomain.com
+```
+
+Hoặc trong `docker-compose.yml`:
+
+```yaml
+environment:
+  API_GATEWAY_URL: https://api.yourdomain.com
+```
+
+Swagger sẽ tự động sử dụng URL này để test API trên production.
+
+### Thêm API Documentation cho Service mới
+
+Để thêm documentation cho service mới:
+
+1. Thêm swagger definitions vào `routes/swagger-docs.js`
+2. Thêm schemas vào `config/swagger.js` nếu cần
+3. Swagger UI sẽ tự động cập nhật
+
 ## Notes
 
 - API Gateway chạy trên port 3000
+- Swagger UI có sẵn tại `/api-docs`
 - Tất cả requests từ client nên đi qua API Gateway
 - Các services không cần expose ports ra ngoài (chỉ cần trong Docker network)
 - Gateway tự động forward headers và body từ client tới services
