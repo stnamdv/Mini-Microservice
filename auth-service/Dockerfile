@@ -8,7 +8,7 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --production
 
-# Copy application files
+# Copy all application files (excluding those in .dockerignore)
 COPY . .
 
 # Expose port

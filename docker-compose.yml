@@ -32,9 +32,11 @@ services:
       - mongodb
     networks:
       - ecommerce-network
-    volumes:
-      - ./auth-service:/app
-      - /app/node_modules
+    # Volumes removed for production - use image files instead
+    # Uncomment below for development hot-reload:
+    # volumes:
+    #   - ./auth-service:/app
+    #   - /app/node_modules
 
   api-gateway:
     build:
@@ -53,9 +55,11 @@ services:
       - auth-service
     networks:
       - ecommerce-network
-    volumes:
-      - ./api-gateway:/app
-      - /app/node_modules
+    # Volumes removed for production - use image files instead
+    # Uncomment below for development hot-reload:
+    # volumes:
+    #   - ./api-gateway:/app
+    #   - /app/node_modules
 
 volumes:
   mongodb_data:
