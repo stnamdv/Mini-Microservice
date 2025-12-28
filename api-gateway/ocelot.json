@@ -14,24 +14,21 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
-      },
-      "RateLimitOptions": {
-        "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "1m",
-        "PeriodTimespan": 60,
-        "Limit": 100
       }
     }
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:3000",
     "RateLimitOptions": {
-      "ClientIdHeader": "ClientId",
-      "QuotaExceededMessage": "API calls quota exceeded! maximum admitted {0} per {1}",
-      "RateLimitCounterPrefix": "ocelot",
-      "DisableRateLimitHeaders": false,
-      "HttpStatusCode": 429
+      "ClientIdHeader": "X-ClientId",
+      "ClientWhitelist": [],
+      "EnableRateLimiting": true,
+      "HttpStatusCode": 429,
+      "Limit": 10,
+      "Period": "1s",
+      "PeriodTimespan": 1,
+      "QuotaExceededMessage": "API rate limit exceeded. Please try again later.",
+      "RateLimitCounterPrefix": "ocelot"
     }
   }
 }
