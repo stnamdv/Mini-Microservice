@@ -1,14 +1,14 @@
 # E-commerce Microservices Architecture
 
-A microservices-based e-commerce system built with .NET 9, MongoDB, and Apache Kafka.
+A microservices-based e-commerce system built with Node.js, .NET 9, MongoDB, and Apache Kafka.
 
 ## Architecture Overview
 
 - **Frontend** (React) - User interface for the e-commerce system
 - **API Gateway** (Ocelot) - Routes requests to appropriate services
 - **Auth Service** (Node.js) - User authentication and authorization
-- **Product Service** (.NET 9) - Product CRUD operations
-- **Order Service** (.NET 9) - Order processing with event-driven inventory updates
+- **Product Service** (Node.js) - Product CRUD operations with synchronous responses
+- **Order Service** (Node.js) - Order processing with asynchronous event-driven inventory updates
 - **Inventory Service** (.NET 9 Worker) - Background inventory management
 - **Kafka** - Message broker for decoupling services
 - **MongoDB** - Database (separate databases for each service)
@@ -52,6 +52,7 @@ Background worker that processes inventory updates from Kafka messages.
 
 ### Prerequisites
 - Docker and Docker Compose
+- Node.js 18+ (optional, for local development)
 - .NET 9 SDK (optional, for local development)
 
 ### Running the System
@@ -93,15 +94,22 @@ curl http://localhost:3000/api/products
 curl -X POST http://localhost:3000/api/orders \
   -H "Content-Type: application/json" \
   -d '{
-    "customerId": "user123",
-    "customerEmail": "user@example.com",
+    "customerId": "customer_001",
     "items": [
       {
         "productId": "507f1f77bcf86cd799439011",
+        "productName": "iPhone 15 Pro",
+        "price": 1199.99,
         "quantity": 1
       }
     ],
-    "shippingAddress": "123 Main St, City, State 12345"
+    "shippingAddress": {
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10001",
+      "country": "USA"
+    }
   }'
 ```
 
@@ -132,13 +140,16 @@ Each service uses its own MongoDB database:
 
 2. **Run services individually:**
    ```bash
-   # Product Service
-   cd product-service && dotnet run
+   # Auth Service (Node.js)
+   cd auth-service && npm install && npm run dev
 
-   # Order Service
-   cd order-service && dotnet run
+   # Product Service (Node.js)
+   cd product-service && npm install && npm run dev
 
-   # Inventory Service
+   # Order Service (Node.js)
+   cd order-service && npm install && npm run dev
+
+   # Inventory Service (.NET)
    cd inventory-service && dotnet run
    ```
 

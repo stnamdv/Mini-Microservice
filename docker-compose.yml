@@ -76,8 +76,9 @@ services:
     ports:
       - "3002:3002"
     environment:
-      ASPNETCORE_URLS: http://+:3002
-      ASPNETCORE_ENVIRONMENT: Production
+      PORT: 3002
+      MONGODB_URI: mongodb://mongodb:27017/ecommerce_products
+      NODE_ENV: production
     depends_on:
       - mongodb
     networks:
@@ -93,8 +94,10 @@ services:
     ports:
       - "3003:3003"
     environment:
-      ASPNETCORE_URLS: http://+:3003
-      ASPNETCORE_ENVIRONMENT: Production
+      PORT: 3003
+      MONGODB_URI: mongodb://mongodb:27017/ecommerce_orders
+      NODE_ENV: production
+      KAFKA_BROKERS: kafka:29092
     depends_on:
       - mongodb
       - kafka
