@@ -26,9 +26,9 @@ public class OrderCreatedConsumer : BackgroundService
 
         var config = new ConsumerConfig
         {
-            BootstrapServers = kafkaSettings.BootstrapServers,
-            GroupId = kafkaSettings.GroupId,
-            AutoOffsetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings.AutoOffsetReset),
+            BootstrapServers = kafkaSettings!.BootstrapServers!,
+            GroupId = kafkaSettings!.GroupId!,
+            AutoOffsetReset = Enum.Parse<AutoOffsetReset>(kafkaSettings!.AutoOffsetReset!),
             EnableAutoCommit = true,
             AutoCommitIntervalMs = 5000,
             SessionTimeoutMs = 30000,

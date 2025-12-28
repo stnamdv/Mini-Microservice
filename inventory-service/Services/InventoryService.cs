@@ -10,8 +10,8 @@ public class InventoryService
     public InventoryService(IConfiguration config)
     {
         var settings = config.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-        var client = new MongoClient(settings.ConnectionString);
-        var database = client.GetDatabase(settings.DatabaseName);
+        var client = new MongoClient(settings!.ConnectionString!);
+        var database = client.GetDatabase(settings!.DatabaseName!);
         _inventory = database.GetCollection<Inventory>("inventory");
     }
 
