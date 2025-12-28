@@ -1,6 +1,7 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using AspNetCoreRateLimit;
+using AspNetCoreRateLimit.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,8 @@ if (!string.IsNullOrEmpty(redisConnectionString))
         options.Configuration = redisConnectionString;
     });
     // Use Redis stores for distributed rate limiting (AspNetCoreRateLimit.Redis v2.0.0)
-    builder.Services.AddSingleton<IIpPolicyStore, RedisCacheIpPolicyStore>();
-    builder.Services.AddSingleton<IRateLimitCounterStore, RedisCacheRateLimitCounterStore>();
+    builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+    builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
 }
 else
 {
