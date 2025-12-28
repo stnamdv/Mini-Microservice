@@ -5,15 +5,18 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [customerId, setCustomerId] = useState('customer_001'); // Default for demo
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (customerId) {
+      fetchOrders();
+    }
+  }, [customerId]);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await ordersApi.getAll();
+      const response = await ordersApi.getAll({ customerId });
       setOrders(response.data);
       setError(null);
     } catch (err) {
@@ -56,6 +59,23 @@ const OrderList = () => {
   return (
     <div>
       <h1 className="page-title">Orders</h1>
+
+      <div className="card" style={{ marginBottom: '20px' }}>
+        <h3>Filter Orders</h3>
+        <div className="form-group">
+          <label htmlFor="customerId">Customer ID:</label>
+          <input
+            type="text"
+            id="customerId"
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+            placeholder="Enter customer ID (e.g., customer_001)"
+          />
+        </div>
+        <button className="btn" onClick={fetchOrders} disabled={!customerId}>
+          Load Orders
+        </button>
+      </div>
 
       {orders.length === 0 ? (
         <div className="card">
@@ -109,9 +129,6 @@ const OrderList = () => {
         </div>
       )}
 
-      <div style={{ marginTop: '20px' }}>
-        <button className="btn" onClick={fetchOrders}>Refresh Orders</button>
-      </div>
     </div>
   );
 };

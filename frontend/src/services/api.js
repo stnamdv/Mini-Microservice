@@ -20,7 +20,7 @@ export const productsApi = {
 
 // Orders API
 export const ordersApi = {
-  getAll: () => api.get('/api/orders'),
+  getAll: (params = {}) => api.get('/api/orders', { params }),
   getById: (id) => api.get(`/api/orders/${id}`),
   create: (order) => api.post('/api/orders', order),
   updateStatus: (id, status) => api.put(`/api/orders/${id}/status`, { status }),
