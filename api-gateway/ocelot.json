@@ -17,7 +17,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/products/{everything}",
+      "DownstreamPathTemplate": "/api/Products/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -33,7 +33,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/orders/{everything}",
+      "DownstreamPathTemplate": "/api/Orders/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
