@@ -1,6 +1,38 @@
 version: '3.8'
 
 services:
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: ecommerce-zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ecommerce-network
+
+  # Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: ecommerce-kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - ecommerce-network
+
+  # MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: ecommerce-mongodb
@@ -14,6 +46,7 @@ services:
     networks:
       - ecommerce-network
 
+  # Auth Service
   auth-service:
     build:
       context: ./auth-service
@@ -32,12 +65,56 @@ services:
       - mongodb
     networks:
       - ecommerce-network
-    # Volumes removed for production - use image files instead
-    # Uncomment below for development hot-reload:
-    # volumes:
-    #   - ./auth-service:/app
-    #   - /app/node_modules
 
+  # Product Service
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    container_name: product-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      ASPNETCORE_URLS: http://+:3002
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-network
+
+  # Order Service
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      ASPNETCORE_URLS: http://+:3003
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on:
+      - mongodb
+      - kafka
+    networks:
+      - ecommerce-network
+
+  # Inventory Service (Background Worker)
+  inventory-service:
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory-service
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+      - kafka
+    networks:
+      - ecommerce-network
+
+  # API Gateway
   api-gateway:
     build:
       context: ./api-gateway
@@ -51,6 +128,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
     depends_on:
       - auth-service
+      - product-service
+      - order-service
     networks:
       - ecommerce-network
 
