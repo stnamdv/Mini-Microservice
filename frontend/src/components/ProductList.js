@@ -15,11 +15,14 @@ const ProductList = () => {
     try {
       setLoading(true);
       const response = await productsApi.getAll();
-      setProducts(response.data);
+      console.log('API Response:', response.data); // Debug log
+      const productsData = response.data || [];
+      setProducts(Array.isArray(productsData) ? productsData : []);
       setError(null);
     } catch (err) {
       setError('Failed to load products. Please try again.');
       console.error('Error fetching products:', err);
+      setProducts([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -63,7 +66,7 @@ const ProductList = () => {
         <Link to="/products/new" className="btn">Add New Product</Link>
       </div>
 
-      {!products || products.length === 0 ? (
+      {!Array.isArray(products) || products.length === 0 ? (
         <div className="card">
           <p>No products available.</p>
         </div>
