@@ -1,51 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
 const connectDB = require('./config/database');
 
 const app = express();
-
-// Swagger configuration
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Auth Service API',
-      version: '1.0.0',
-      description: 'Authentication and Authorization Service for Mini E-commerce',
-    },
-    servers: [
-      {
-        url: `http://localhost:${process.env.PORT || 3001}`,
-        description: 'Development server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
-    security: [{
-      bearerAuth: [],
-    }],
-  },
-  apis: ['./routes/*.js'], // Paths to files containing OpenAPI definitions
-};
-
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// Expose swagger json for API Gateway
-app.get('/swagger/v1/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerDocs);
-});
 
 // Kết nối MongoDB
 connectDB();

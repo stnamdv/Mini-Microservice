@@ -14,20 +14,7 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
-      },
-      "SwaggerKey": "auth-service"
-    }
-  ],
-  "SwaggerEndPoints": [
-    {
-      "Key": "auth-service",
-      "Config": [
-        {
-          "Name": "Auth Service API",
-          "Version": "v1",
-          "Url": "http://auth-service:3001/swagger/v1/swagger.json"
-        }
-      ]
+      }
     }
   ],
   "GlobalConfiguration": {

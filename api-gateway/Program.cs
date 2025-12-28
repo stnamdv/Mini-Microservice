@@ -1,6 +1,5 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using Ocelot.Provider.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,12 +8,7 @@ builder.Services.AddControllers();
 
 // Configure Ocelot
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
-builder.Services.AddOcelot(builder.Configuration)
-    .AddSwaggerForOcelot(builder.Configuration);
-
-// Add Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOcelot(builder.Configuration);
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -30,13 +24,10 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// Always enable Swagger (including production)
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway V1");
-    c.RoutePrefix = "swagger"; // Access at /swagger
-});
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
