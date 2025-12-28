@@ -47,19 +47,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PORT: 3000
-      AUTH_SERVICE_URL: http://auth-service:3001
-      NODE_ENV: production
-      API_GATEWAY_URL: http://localhost:3000
+      ASPNETCORE_URLS: http://+:3000
+      ASPNETCORE_ENVIRONMENT: Production
     depends_on:
       - auth-service
     networks:
       - ecommerce-network
-    # Volumes removed for production - use image files instead
-    # Uncomment below for development hot-reload:
-    # volumes:
-    #   - ./api-gateway:/app
-    #   - /app/node_modules
 
 volumes:
   mongodb_data:

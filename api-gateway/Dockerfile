@@ -1,19 +1,24 @@
-FROM node:18-alpine
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
 
-WORKDIR /app
+# Copy csproj and restore as distinct layers
+COPY ["ApiGateway.csproj", "./"]
+RUN dotnet restore "ApiGateway.csproj"
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install --production
-
-# Copy all application files (excluding those in .dockerignore)
+# Copy everything else and build
 COPY . .
+RUN dotnet build "ApiGateway.csproj" -c Release -o /app/build
 
-# Expose port
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "ApiGateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "server.js"]
-
+ENTRYPOINT ["dotnet", "ApiGateway.dll"]
