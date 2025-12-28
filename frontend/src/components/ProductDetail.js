@@ -67,7 +67,7 @@ const ProductDetail = () => {
 
         <div style={{ marginTop: '20px' }}>
           <Link to="/" className="btn">Back to Products</Link>
-          <Link to={`/order/${product.id}`} className="btn">Order This Product</Link>
+          <Link to={`/order/${product._id || product.id}`} className="btn">Order This Product</Link>
         </div>
       </div>
     </div>

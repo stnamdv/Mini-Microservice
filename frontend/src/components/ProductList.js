@@ -54,17 +54,17 @@ const ProductList = () => {
       ) : (
         <div className="product-grid">
           {products.map(product => (
-            <div key={product.id} className="product-card">
+            <div key={product._id || product.id} className="product-card">
               <h3>{product.name}</h3>
               <p>{product.description}</p>
               <div className="product-price">${product.price}</div>
               <div className="product-stock">Stock: {product.stock}</div>
               <div className="product-category">Category: {product.category}</div>
               <div style={{ marginTop: '15px' }}>
-                <Link to={`/products/${product.id}`} className="btn">
+                <Link to={`/products/${product._id || product.id}`} className="btn">
                   View Details
                 </Link>
-                <Link to={`/order/${product.id}`} className="btn">
+                <Link to={`/order/${product._id || product.id}`} className="btn">
                   Order Now
                 </Link>
               </div>

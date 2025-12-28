@@ -64,9 +64,9 @@ const OrderList = () => {
       ) : (
         <div>
           {orders.map(order => (
-            <div key={order.id} className="card">
+            <div key={order._id || order.id} className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3>Order #{order.id}</h3>
+                <h3>Order #{order.orderNumber || order._id}</h3>
                 <span
                   style={{
                     padding: '4px 8px',
@@ -82,8 +82,11 @@ const OrderList = () => {
 
               <div style={{ margin: '10px 0' }}>
                 <p><strong>Customer:</strong> {order.customerId}</p>
-                <p><strong>Email:</strong> {order.customerEmail}</p>
-                <p><strong>Shipping Address:</strong> {order.shippingAddress}</p>
+                <p><strong>Shipping Address:</strong> {
+                  typeof order.shippingAddress === 'string'
+                    ? order.shippingAddress
+                    : `${order.shippingAddress?.street}, ${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.zipCode}, ${order.shippingAddress?.country}`
+                }</p>
                 <p><strong>Created:</strong> {new Date(order.createdAt).toLocaleString()}</p>
               </div>
 
@@ -91,7 +94,7 @@ const OrderList = () => {
                 <h4>Items:</h4>
                 {order.items && order.items.map((item, index) => (
                   <div key={index} style={{ marginLeft: '20px', marginBottom: '5px' }}>
-                    <p>Product ID: {item.productId} | Quantity: {item.quantity}</p>
+                    <p>{item.productName} (ID: {item.productId}) | Quantity: {item.quantity} | Price: ${item.price}</p>
                   </div>
                 ))}
               </div>

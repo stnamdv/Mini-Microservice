@@ -13,9 +13,14 @@ const OrderForm = () => {
 
   const [formData, setFormData] = useState({
     customerId: '',
-    customerEmail: '',
     quantity: 1,
-    shippingAddress: ''
+    shippingAddress: {
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: ''
+    }
   });
 
   useEffect(() => {
@@ -39,10 +44,23 @@ const OrderForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+    // Handle nested shipping address fields
+    if (name.startsWith('shippingAddress.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        shippingAddress: {
+          ...prev.shippingAddress,
+          [field]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -59,10 +77,11 @@ const OrderForm = () => {
 
       const orderData = {
         customerId: formData.customerId,
-        customerEmail: formData.customerEmail,
         items: [
           {
-            productId: product.id,
+            productId: product._id || product.id,
+            productName: product.name,
+            price: product.price,
             quantity: parseInt(formData.quantity)
           }
         ],
@@ -75,9 +94,14 @@ const OrderForm = () => {
       // Reset form
       setFormData({
         customerId: '',
-        customerEmail: '',
         quantity: 1,
-        shippingAddress: ''
+        shippingAddress: {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: ''
+        }
       });
 
       // Redirect to orders page after 2 seconds
@@ -152,15 +176,69 @@ const OrderForm = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="customerEmail">Email:</label>
+            <label htmlFor="street">Street Address:</label>
             <input
-              type="email"
-              id="customerEmail"
-              name="customerEmail"
-              value={formData.customerEmail}
+              type="text"
+              id="street"
+              name="shippingAddress.street"
+              value={formData.shippingAddress.street}
               onChange={handleInputChange}
               required
-              placeholder="Enter your email"
+              placeholder="Enter your street address"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="city">City:</label>
+            <input
+              type="text"
+              id="city"
+              name="shippingAddress.city"
+              value={formData.shippingAddress.city}
+              onChange={handleInputChange}
+              required
+              placeholder="Enter your city"
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label htmlFor="state">State:</label>
+              <input
+                type="text"
+                id="state"
+                name="shippingAddress.state"
+                value={formData.shippingAddress.state}
+                onChange={handleInputChange}
+                required
+                placeholder="State"
+              />
+            </div>
+
+            <div className="form-group" style={{ flex: 1 }}>
+              <label htmlFor="zipCode">ZIP Code:</label>
+              <input
+                type="text"
+                id="zipCode"
+                name="shippingAddress.zipCode"
+                value={formData.shippingAddress.zipCode}
+                onChange={handleInputChange}
+                required
+                placeholder="ZIP Code"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="country">Country:</label>
+            <input
+              type="text"
+              id="country"
+              name="shippingAddress.country"
+              value={formData.shippingAddress.country}
+              onChange={handleInputChange}
+              required
+              placeholder="Enter your country"
             />
           </div>
 
@@ -178,18 +256,6 @@ const OrderForm = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="shippingAddress">Shipping Address:</label>
-            <textarea
-              id="shippingAddress"
-              name="shippingAddress"
-              value={formData.shippingAddress}
-              onChange={handleInputChange}
-              required
-              rows="3"
-              placeholder="Enter your shipping address"
-            />
-          </div>
 
           <div style={{ marginTop: '20px' }}>
             <button type="submit" className="btn" disabled={submitting}>

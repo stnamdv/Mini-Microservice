@@ -12,8 +12,23 @@ A React frontend application for demonstrating the microservices e-commerce syst
 
 ## API Integration
 
-This frontend connects to the e-commerce API gateway at:
-`http://mini-ecommerce.42genius.com/`
+This frontend connects to the e-commerce API gateway. By default, it uses:
+- **Local Development**: `http://localhost:3000`
+- **Production**: Configurable via environment variable
+
+### Environment Configuration
+
+Create a `.env` file in the frontend directory:
+
+```bash
+# For local development (default)
+REACT_APP_API_URL=http://localhost:3000
+
+# For production deployment
+REACT_APP_API_URL=http://your-production-api-gateway-url
+```
+
+Copy `env.example` to `.env` and modify as needed.
 
 ## Getting Started
 
@@ -87,6 +102,7 @@ The Docker container uses `serve` to serve the built React application.
 ## Notes
 
 - This is a demo frontend for testing the microservices architecture
-- All API calls are made to the production API gateway
+- API calls default to local API gateway (`http://localhost:3000`)
+- Configure `REACT_APP_API_URL` environment variable for different environments
 - Orders are processed asynchronously through the event-driven system
-- Make sure the backend services are running and accessible
+- Make sure the backend services are running and accessible via the API gateway
