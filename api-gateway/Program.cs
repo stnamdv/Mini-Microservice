@@ -21,8 +21,9 @@ if (!string.IsNullOrEmpty(redisConnectionString))
     {
         options.Configuration = redisConnectionString;
     });
-    builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
-    builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+    // Use Redis stores for distributed rate limiting (AspNetCoreRateLimit.Redis v2.0.0)
+    builder.Services.AddSingleton<IIpPolicyStore, RedisCacheIpPolicyStore>();
+    builder.Services.AddSingleton<IRateLimitCounterStore, RedisCacheRateLimitCounterStore>();
 }
 else
 {
