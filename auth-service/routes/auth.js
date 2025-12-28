@@ -5,6 +5,76 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { authenticate, authorize } = require('../middleware/auth');
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the user
+ *         username:
+ *           type: string
+ *           description: The username of the user
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The email of the user
+ *         role:
+ *           type: string
+ *           enum: [customer, admin, seller]
+ *           default: customer
+ *           description: The role of the user
+ *         isActive:
+ *           type: boolean
+ *           default: true
+ *           description: Whether the user account is active
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date the user was created
+ *     AuthResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         message:
+ *           type: string
+ *         data:
+ *           type: object
+ *           properties:
+ *             user:
+ *               $ref: '#/components/schemas/User'
+ *             token:
+ *               type: string
+ *               description: JWT authentication token
+ *     Error:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           default: false
+ *         message:
+ *           type: string
+ *         errors:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               msg:
+ *                 type: string
+ *               param:
+ *                 type: string
+ *               location:
+ *                 type: string
+ */
+
 // Helper function để tạo JWT token
 const generateToken = (userId) => {
   return jwt.sign(
@@ -14,9 +84,57 @@ const generateToken = (userId) => {
   );
 };
 
-// @route   POST /api/auth/register
-// @desc    Đăng ký người dùng mới
-// @access  Public
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
+ *                 description: Username for the user
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: Password for the user
+ *               role:
+ *                 type: string
+ *                 enum: [customer, admin, seller]
+ *                 default: customer
+ *                 description: Role of the user (optional)
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Validation error or user already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ */
 router.post('/register', [
   body('username')
     .trim()
@@ -99,9 +217,47 @@ router.post('/register', [
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Đăng nhập người dùng
-// @access  Public
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User email
+ *               password:
+ *                 type: string
+ *                 description: User password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
 router.post('/login', [
   body('email')
     .isEmail()
@@ -174,9 +330,35 @@ router.post('/login', [
   }
 });
 
-// @route   GET /api/auth/me
-// @desc    Lấy thông tin user hiện tại
-// @access  Private
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get current user information
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   default: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.get('/me', authenticate, async (req, res) => {
   try {
     res.json({
@@ -202,9 +384,51 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/verify
-// @desc    Xác thực token
-// @access  Public
+/**
+ * @swagger
+ * /api/auth/verify:
+ *   post:
+ *     summary: Verify JWT token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *         description: JWT token in Bearer format
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: JWT token (alternative to Authorization header)
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   default: true
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Token is required
+ *       401:
+ *         description: Invalid token
+ */
 router.post('/verify', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '') || req.body.token;
@@ -247,9 +471,37 @@ router.post('/verify', async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/admin
-// @desc    Endpoint chỉ dành cho admin
-// @access  Private (Admin only)
+/**
+ * @swagger
+ * /api/auth/admin:
+ *   get:
+ *     summary: Admin only endpoint
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Admin access granted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   default: true
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized or insufficient permissions
+ *       403:
+ *         description: Forbidden - Admin access required
+ */
 router.get('/admin', authenticate, authorize('admin'), async (req, res) => {
   res.json({
     success: true,
