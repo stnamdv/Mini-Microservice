@@ -9,6 +9,27 @@ const api = axios.create({
   },
 });
 
+// Add token to requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Auth API
+export const authApi = {
+  login: (credentials) => api.post('/api/auth/login', credentials),
+  register: (userData) => api.post('/api/auth/register', userData),
+  profile: () => api.get('/api/auth/profile'),
+};
+
 // Products API
 export const productsApi = {
   getAll: () => api.get('/api/products'),

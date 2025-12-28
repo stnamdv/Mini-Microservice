@@ -43,11 +43,27 @@ const ProductList = () => {
     );
   }
 
+  const handleDelete = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await productsApi.delete(productId);
+        // Refresh the product list
+        fetchProducts();
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        alert('Failed to delete product. Please try again.');
+      }
+    }
+  };
+
   return (
     <div>
-      <h1 className="page-title">Products</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 className="page-title" style={{ margin: 0 }}>Products</h1>
+        <Link to="/products/new" className="btn">Add New Product</Link>
+      </div>
 
-      {products.length === 0 ? (
+      {!products || products.length === 0 ? (
         <div className="card">
           <p>No products available.</p>
         </div>
@@ -60,13 +76,23 @@ const ProductList = () => {
               <div className="product-price">${product.price}</div>
               <div className="product-stock">Stock: {product.stock}</div>
               <div className="product-category">Category: {product.category}</div>
-              <div style={{ marginTop: '15px' }}>
+              <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <Link to={`/products/${product._id || product.id}`} className="btn">
                   View Details
                 </Link>
                 <Link to={`/order/${product._id || product.id}`} className="btn">
                   Order Now
                 </Link>
+                <Link to={`/products/${product._id || product.id}/edit`} className="btn btn-secondary">
+                  Edit
+                </Link>
+                <button
+                  onClick={() => handleDelete(product._id || product.id)}
+                  className="btn"
+                  style={{ backgroundColor: '#e74c3c' }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
