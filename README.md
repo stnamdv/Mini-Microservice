@@ -4,6 +4,7 @@ A microservices-based e-commerce system built with .NET 9, MongoDB, and Apache K
 
 ## Architecture Overview
 
+- **Frontend** (React) - User interface for the e-commerce system
 - **API Gateway** (Ocelot) - Routes requests to appropriate services
 - **Auth Service** (Node.js) - User authentication and authorization
 - **Product Service** (.NET 9) - Product CRUD operations
@@ -13,6 +14,16 @@ A microservices-based e-commerce system built with .NET 9, MongoDB, and Apache K
 - **MongoDB** - Database (separate databases for each service)
 
 ## Services
+
+### Frontend (Port 4000)
+React-based user interface for the e-commerce system.
+
+**Features:**
+- Product catalog browsing
+- Product details view
+- Order placement form
+- Order history tracking
+- Responsive design
 
 ### Product Service (Port 3002)
 REST API for product management.
@@ -51,6 +62,7 @@ Background worker that processes inventory updates from Kafka messages.
    ```
 
 2. **Services will be available at:**
+   - Frontend: http://localhost:4000
    - API Gateway: http://localhost:3000
    - Auth Service: http://localhost:3001
    - Product Service: http://localhost:3002

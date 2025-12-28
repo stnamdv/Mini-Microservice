@@ -133,6 +133,20 @@ services:
     networks:
       - ecommerce-network
 
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ecommerce-frontend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - api-gateway
+    networks:
+      - ecommerce-network
+
 volumes:
   mongodb_data:
 
