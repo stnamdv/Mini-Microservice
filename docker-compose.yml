@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: ecommerce-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce-network
+
   mongodb:
     image: mongo:7.0
     container_name: ecommerce-mongodb
@@ -49,13 +60,16 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:3000
       ASPNETCORE_ENVIRONMENT: Production
+      REDIS_CONNECTION_STRING: redis:6379
     depends_on:
       - auth-service
+      - redis
     networks:
       - ecommerce-network
 
 volumes:
   mongodb_data:
+  redis_data:
 
 networks:
   ecommerce-network:

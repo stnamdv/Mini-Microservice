@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Ocelot" Version="18.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageReference Include="AspNetCoreRateLimit.Redis" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
