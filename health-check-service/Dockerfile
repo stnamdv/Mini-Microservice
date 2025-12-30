@@ -1,6 +1,9 @@
 # Use Node.js 18 Alpine image
 FROM node:18-alpine
 
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
 # Set working directory
 WORKDIR /app
 
@@ -14,11 +17,9 @@ RUN npm install --only=production && npm cache clean --force
 COPY . .
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S healthcheck -u 1001
-
-# Change ownership of app directory
-RUN chown -R healthcheck:nodejs /app
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S healthcheck -u 1001 && \
+    chown -R healthcheck:nodejs /app
 
 # Switch to non-root user
 USER healthcheck
@@ -30,5 +31,6 @@ EXPOSE 3004
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node healthcheck.js
 
-# Start the application
+# Start the application with dumb-init
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "start"]
