@@ -7,6 +7,7 @@ import ProductForm from './components/ProductForm';
 import OrderForm from './components/OrderForm';
 import OrderList from './components/OrderList';
 import LoginForm from './components/LoginForm';
+import HealthCheck from './components/HealthCheck';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -28,6 +29,7 @@ function AppContent() {
         <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link to="/" className="btn">Products</Link>
           <Link to="/orders" className="btn">Orders</Link>
+          <Link to="/health" className="btn">Health Check</Link>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ color: 'white' }}>Welcome, {user.name || user.email}</span>
@@ -39,27 +41,28 @@ function AppContent() {
         </div>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/products/:id/edit" element={
-          <ProtectedRoute>
-            <ProductForm />
-          </ProtectedRoute>
-        } />
-        <Route path="/products/new" element={
-          <ProtectedRoute>
-            <ProductForm />
-          </ProtectedRoute>
-        } />
-        <Route path="/order/:productId" element={<OrderForm />} />
-        <Route path="/orders" element={
-          <ProtectedRoute>
-            <OrderList />
-          </ProtectedRoute>
-        } />
-        <Route path="/login" element={<LoginForm />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<ProductList />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/products/:id/edit" element={
+            <ProtectedRoute>
+              <ProductForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/products/new" element={
+            <ProtectedRoute>
+              <ProductForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/order/:productId" element={<OrderForm />} />
+          <Route path="/orders" element={
+            <ProtectedRoute>
+              <OrderList />
+            </ProtectedRoute>
+          } />
+          <Route path="/health" element={<HealthCheck />} />
+          <Route path="/login" element={<LoginForm />} />
+        </Routes>
     </div>
   );
 }

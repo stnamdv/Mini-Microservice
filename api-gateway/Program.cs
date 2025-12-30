@@ -33,6 +33,14 @@ app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
+// Health check endpoint
+app.MapGet("/health", () => new {
+    success = true,
+    message = "API Gateway is running",
+    timestamp = DateTime.UtcNow.ToString("o"),
+    version = "1.0.0"
+});
+
 // Use Ocelot middleware
 await app.UseOcelot();
 

@@ -117,6 +117,30 @@ services:
     networks:
       - ecommerce-network
 
+  # Health Check Service
+  health-check-service:
+    build:
+      context: ./health-check-service
+      dockerfile: Dockerfile
+    container_name: health-check-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      MONGODB_URI: mongodb://mongodb:27017/health_check
+      KAFKA_BROKERS: kafka:29092
+      NODE_ENV: production
+    depends_on:
+      - mongodb
+      - kafka
+      - auth-service
+      - product-service
+      - order-service
+      - api-gateway
+    networks:
+      - ecommerce-network
+
   # API Gateway
   api-gateway:
     build:

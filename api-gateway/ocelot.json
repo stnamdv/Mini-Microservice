@@ -127,6 +127,38 @@
         "AuthenticationProviderKey": null,
         "AllowedScopes": []
       }
+    },
+    {
+      "DownstreamPathTemplate": "/health",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "health-check-service",
+          "Port": 3004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/health",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/health/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "health-check-service",
+          "Port": 3004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/health/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": null,
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

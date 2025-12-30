@@ -23,6 +23,9 @@ React-based user interface for the e-commerce system.
 - Product details view
 - Order placement form
 - Order history tracking
+- System health monitoring
+- Authentication (login/logout)
+- Product management (CRUD)
 - Responsive design
 
 ### Product Service (Port 3002)
@@ -48,6 +51,18 @@ Handles order placement with asynchronous inventory processing.
 ### Inventory Service
 Background worker that processes inventory updates from Kafka messages.
 
+### Health Check Service (Port 3004)
+Comprehensive monitoring service for all microservices.
+
+**Features:**
+- Real-time health checks for all services
+- Database connectivity monitoring (MongoDB)
+- Message queue monitoring (Kafka)
+- Aggregated system health status
+- Detailed health reports with response times
+- RESTful API for health data
+- Auto-refresh capabilities
+
 ## Getting Started
 
 ### Prerequisites
@@ -68,6 +83,7 @@ Background worker that processes inventory updates from Kafka messages.
    - Auth Service: http://localhost:3001
    - Product Service: http://localhost:3002
    - Order Service: http://localhost:3003
+   - Health Check Service: http://localhost:3004
 
 ## API Usage Examples
 
@@ -113,6 +129,48 @@ curl -X POST http://localhost:3000/api/orders \
   }'
 ```
 
+## Health Check API
+
+### System Health Overview
+```bash
+curl http://localhost:3000/api/health
+```
+
+### Service-specific Health Checks
+```bash
+# Check all services
+curl http://localhost:3000/api/health/services
+
+# Check databases and message queues
+curl http://localhost:3000/api/health/databases
+
+# Check specific service
+curl http://localhost:3000/api/health/auth
+curl http://localhost:3000/api/health/product
+curl http://localhost:3000/api/health/order
+curl http://localhost:3000/api/health/mongodb
+curl http://localhost:3000/api/health/kafka
+```
+
+### Health Check Response Format
+```json
+{
+  "status": "healthy|unhealthy|error",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "responseTime": "150ms",
+  "uptime": 3600.5,
+  "services": [
+    {
+      "name": "Auth Service",
+      "status": "healthy",
+      "responseTime": 45,
+      "timestamp": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "version": "1.0.0"
+}
+```
+
 ## Order Flow
 
 1. **Order Placement**: Customer places order through Order Service
@@ -149,9 +207,17 @@ Each service uses its own MongoDB database:
    # Order Service (Node.js)
    cd order-service && npm install && npm run dev
 
+   # Health Check Service (Node.js)
+   cd health-check-service && npm install && npm run dev
+
    # Inventory Service (.NET)
    cd inventory-service && dotnet run
    ```
+
+3. **Health Monitoring:**
+   - Access health dashboard: http://localhost:4000/health
+   - API health endpoint: http://localhost:3000/api/health
+   - Direct service health: http://localhost:3004/health
 
 ### Adding Sample Inventory Data
 

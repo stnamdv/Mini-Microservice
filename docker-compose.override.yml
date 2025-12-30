@@ -1,0 +1,14 @@
+# Development override configuration
+# This file extends docker-compose.yml for development purposes
+
+version: '3.8'
+
+services:
+  # Override health-check-service for development
+  health-check-service:
+    volumes:
+      - ./health-check-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
